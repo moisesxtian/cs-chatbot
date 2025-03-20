@@ -3,7 +3,7 @@ import './App.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Copy, Moon, Sun } from 'lucide-react';
 
-const API_URL="https://cs-chatbot-nfmqprlku-moisesxtians-projects.vercel.app/api"
+const API_URL="cs-chatbot-gze2kq6oq-moisesxtians-projects.vercel.app/api";
 function App() {
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState([]);

@@ -5,15 +5,15 @@ from pydantic import BaseModel
 from utils.ask import process_query
 
 app = FastAPI()
-origins = [
-    "cs-chatbot-psi.vercel.app",
+allowed_origins = [
+    "https://cs-chatbot-gze2kq6oq-moisesxtians-projects.vercel.app"  # Your React frontend URL
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with your frontend URL for security
+    allow_origins=allowed_origins,  # Change "*" to frontend domain
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_methods=["GET", "POST", "OPTIONS"],  # Allow only necessary methods
     allow_headers=["*"],  # Allow all headers
 )
 
