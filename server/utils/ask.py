@@ -36,7 +36,7 @@ def detect_intent(query: str) -> str:
         return "Deep_Cleaning"
     elif "carpet" in query_lower or "upholstery" in query_lower:
         return "Carpet_&_Upholstery"
-    elif "manicure" in query_lower or "pedicure" in query_lower or "nail" in query_lower:
+    elif "manicure" in query_lower or "pedicure" in query_lower or "nail" or "eyelashes" or "lashes"in query_lower:
         return "Home_Beauty"
     elif "massage" in query_lower:
         return "Massage"
@@ -67,6 +67,13 @@ def get_contextual_query(user_query: str, session_id: str, n_history: int = 2) -
     
     # Combine recent history with current query
     context_query = " ".join(recent_user_msgs + [user_query]) if recent_user_msgs else user_query
+
+    # If query includes pricing-related keywords, append "pricing" to the query
+    query_lower = user_query.lower()
+    if any(keyword in query_lower for keyword in ["price", "cost", "how much", "pricing","rate", "fee"]):
+        context_query += " pricing rate"
+
+    
     print(f"Contextual Query: {context_query}")
     return context_query
 
@@ -77,15 +84,15 @@ def process_query(user_query: str, session_id: str) -> str:
     # STEP 1: Get contextual query with intent handling
     context_query = get_contextual_query(user_query, session_id)
 
-    # STEP 2: Query ChromaDB
+    # STEP 2: Query ChromaDB (optionally adjust n_results or add a 'where' clause if supported)
     results = collection.query(
         query_texts=[context_query],
-        n_results=3  # Adjust number of results as needed
+        n_results=1 # Adjust as needed
     )
     print("ChromaDB query results:", results)
 
     documents = results.get('documents', [])
-    # Check that we have non-empty results; note that results are nested in a list
+    # Check that we have non-empty results; results are nested in a list
     if not documents or not documents[0]:
         return "I don't know"
 
@@ -98,8 +105,11 @@ Be specific, and try to upsell the customer.
 ------------------------------
 Example: Hi Mark!☺️ Just following up – would you like me to proceed with the diagnostic for your aircon?❄️ 
 Our technician can check and fix minor issues on the spot! Let me know, and I'll arrange it for you!🧑‍🔧
-Only answer based on the provided knowledge. If you don't know the answer, just say: I don't know.
+Only answer based on the provided knowledge. Do not make up answers.
+
+You are chatting in a message format, Format your messages in a more readable format. 
 ------------------------------
+IMPORTANT: DO NOT MAKE UP A REPLY especially if you don't have the information. if information is not in the data, say that you currently offer that service or its not available
 The data:
 {documents}
 """
