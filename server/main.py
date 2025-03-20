@@ -5,9 +5,8 @@ from pydantic import BaseModel
 from utils.ask import process_query
 
 app = FastAPI()
-
 origins = [
-    "http://localhost:5173",
+    "cs-chatbot-psi.vercel.app",
 ]
 
 app.add_middleware(
