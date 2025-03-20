@@ -26,7 +26,7 @@ class QueryRequest(BaseModel):
 async def root():
     return {"message": "Test"}
 
-@app.post("/api/ask")
+@app.post("/ask")
 def ask_endpoint(request: QueryRequest):
     try:
         response = process_query(request.query, request.session_id)
