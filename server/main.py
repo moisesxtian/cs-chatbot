@@ -7,7 +7,7 @@ from utils.ask import process_query
 ## "https://cs-chatbot-gze2kq6oq-moisesxtians-projects.vercel.app"
 app = FastAPI()
 allowed_origins = [
-    "cs-chatbot-psi.vercel.app/api"  # Your React frontend URL
+    "https://cs-chatbot-psi.vercel.app/api"  # Your React frontend URL
 ]
 
 app.add_middleware(
