@@ -7,7 +7,7 @@ from utils.ask import process_query
 app = FastAPI()
 
 origins = [
-    "cs-chatbot-fastapi.vercel.app",
+    "https://cs-chatbot-fastapi.vercel.app",
 ]
 
 app.add_middleware(
