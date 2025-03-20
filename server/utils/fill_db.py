@@ -1,54 +1,45 @@
-from langchain_community.document_loaders import PyPDFDirectoryLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-import chromadb
 import os
+import docx
+import chromadb
+from chromadb.config import Settings
+from tqdm import tqdm
 
-# setting the environment
-DATA_PATH = r"data"
+DATA_DIR = r"data"  # adjust path if needed
 CHROMA_PATH = r"chroma_db"
 
+# ChromaDB setup
 chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
+collection = chroma_client.get_or_create_collection(name="services")
 
-collection = chroma_client.get_or_create_collection(name="growing_vegetables")
+def extract_text_from_docx(docx_path):
+    doc = docx.Document(docx_path)
+    return "\n".join([para.text.strip() for para in doc.paragraphs if para.text.strip()])
 
-# loading the documents
-loader = PyPDFDirectoryLoader(DATA_PATH)
-raw_documents = loader.load()
+def process_folder(folder_path):
+    docs = []
+    metadatas = []
+    ids = []
+    counter = 0
 
-# splitting the documents
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=500,
-    chunk_overlap=200,
-    length_function=len,
-    is_separator_regex=False,
-)
+    for root, _, files in os.walk(folder_path):
+        for file in tqdm(files):
+            if file.endswith(".docx"):
+                full_path = os.path.join(root, file)
+                text = extract_text_from_docx(full_path)
+                if text:
+                    docs.append(text)
+                    metadatas.append({"source": full_path})
+                    ids.append(f"doc_{counter}")
+                    counter += 1
+    return docs, metadatas, ids
 
-chunks = text_splitter.split_documents(raw_documents)
-
-# preparing data to be added into chromadb
-documents = []
-metadata = []
-ids = []
-
-i = 0
-
-for chunk in chunks:
-    # Extract file name for service tag
-    source_path = chunk.metadata.get('source', '')
-    file_name = os.path.basename(source_path).replace('.pdf', '').strip()
-
-    documents.append(chunk.page_content)
-    ids.append("ID" + str(i))
-    metadata.append({
-        **chunk.metadata,
-        "service": file_name  # <-- add service name from filename!
-    })
-
-    i += 1
-
-# upserting to chromadb
-collection.upsert(
-    documents=documents,
-    metadatas=metadata,
-    ids=ids
-)
+if __name__ == "__main__":
+    documents, metadatas, ids = process_folder(DATA_DIR)
+    
+    print(f"Inserting {len(documents)} documents into ChromaDB...")
+    collection.add(
+        documents=documents,
+        metadatas=metadatas,
+        ids=ids
+    )
+    print("✅ Done populating ChromaDB!")

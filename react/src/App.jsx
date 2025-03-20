@@ -1,30 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Copy } from 'lucide-react';
+import { Copy, Moon, Sun } from 'lucide-react';
 
 function App() {
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const messagesEndRef = useRef(null);
+  const [sessionId] = useState(() => crypto.randomUUID());
 
-  // Unique session ID (will persist per session)
-  const [sessionId] = useState(() => {
-    return crypto.randomUUID();
-  });
-
-  // Initial welcome message from AI
   useEffect(() => {
-    setMessages([
-      {
-        sender: 'ai',
-        text: '👋 Hi there! How can I assist you today?',
-      },
-    ]);
+    setMessages([{ sender: 'ai', text: '👋 Hi there! How can I assist you today?' }]);
   }, []);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -37,7 +27,6 @@ function App() {
 
     setMessages((prev) => [...prev, { sender: 'user', text: userInput }]);
     setUserInput('');
-
     setIsTyping(true);
     setMessages((prev) => [...prev, { sender: 'ai', text: '...' }]);
 
@@ -47,16 +36,15 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: userInput, session_id: sessionId }),
       });
-
       const data = await response.json();
       setMessages((prev) => {
-        const updated = prev.slice(0, -1); // Remove "..."
+        const updated = prev.slice(0, -1);
         return [...updated, { sender: 'ai', text: data.response }];
       });
     } catch (error) {
       console.error('Error:', error);
       setMessages((prev) => {
-        const updated = prev.slice(0, -1); // Remove "..."
+        const updated = prev.slice(0, -1);
         return [...updated, { sender: 'ai', text: '⚠️ Failed to fetch response.' }];
       });
     } finally {
@@ -65,23 +53,34 @@ function App() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="bg-gray-900 shadow-xl rounded-2xl w-full max-w-lg flex flex-col overflow-hidden border border-gray-700">
-        <header className="bg-gray-800 text-white text-center p-4 text-xl font-semibold rounded-t-2xl">
-          💬 Customer Service Chatbot
+    <div className={`${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900'} w-full h-screen flex items-center justify-center`}>
+      <div className="w-full max-w-2xl h-[90vh] bg-white dark:bg-gray-700 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+        
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 py-4 border-b border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900">
+          <h1 className="text-xl font-semibold flex items-center gap-2">
+            <span>💬 Chatbot</span>
+          </h1>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </header>
 
-        <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[60vh] custom-scrollbar">
+        {/* Chat messages */}
+        <div className="flex-1 p-4 space-y-4 overflow-y-auto custom-scrollbar">
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`relative flex p-4 rounded-2xl ${
+              className={`relative max-w-[75%] p-4 pr-10 rounded-2xl ${
                 msg.sender === 'user'
-                  ? 'bg-gray-700 self-end ml-auto text-white'
-                  : 'bg-gray-800 self-start mr-auto text-gray-200 border border-gray-700'
-              } max-w-[80%]`}
+                  ? 'bg-blue-600 text-white self-end ml-auto'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 self-start'
+              }`}
             >
-              <p className="whitespace-pre-wrap break-words">
+              <p className="break-words whitespace-pre-wrap">
                 {msg.text === '...' && isTyping ? (
                   <span className="animate-pulse">AI is typing...</span>
                 ) : (
@@ -90,8 +89,8 @@ function App() {
               </p>
               {msg.sender === 'ai' && msg.text !== '...' && (
                 <CopyToClipboard text={msg.text}>
-                  <button className="absolute top-2 right-2 text-gray-400 hover:text-white">
-                    <Copy size={16} />
+                  <button className="absolute top-2 right-2 bg-gray-400 dark:bg-gray-600 hover:bg-gray-500 dark:hover:bg-gray-500 rounded-full p-1 text-white">
+                    <Copy size={12} />
                   </button>
                 </CopyToClipboard>
               )}
@@ -100,17 +99,18 @@ function App() {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSubmit} className="flex p-4 bg-gray-800 border-t border-gray-700">
+        {/* Input Form */}
+        <form onSubmit={handleSubmit} className="flex border-t border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-3">
           <input
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 rounded-l-xl p-3 outline-none bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-gray-500 border border-gray-600"
+            className="flex-1 px-4 py-2 rounded-l-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100"
           />
           <button
             type="submit"
-            className="bg-green-500 hover:bg-green-600 text-white px-4 rounded-r-xl"
+            className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-r-lg"
           >
             Send
           </button>
