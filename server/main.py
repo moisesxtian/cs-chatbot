@@ -1,20 +1,20 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import os
+
 from utils.ask import process_query
 
-## "https://cs-chatbot-gze2kq6oq-moisesxtians-projects.vercel.app"
 app = FastAPI()
-allowed_origins = [
-    "https://cs-chatbot-psi.vercel.app"  # Your React frontend URL
+
+origins = [
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,  # Change "*" to frontend domain
+    allow_origins=["*"],  # Replace "*" with your frontend URL for security
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],  # Allow only necessary methods
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
 
