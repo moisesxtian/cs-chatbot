@@ -1,0 +1,15 @@
+
+# Global ignores
+node_modules/
+.DS_Store
+
+# React-specific
+/react/node_modules/
+/react/build/
+
+# Python-specific
+/server/venv/
+/server/__pycache__/
+/server/*.pyc
+/server/.env
+/server/data/*
