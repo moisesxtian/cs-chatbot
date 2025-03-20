@@ -31,7 +31,7 @@ function App() {
     setMessages((prev) => [...prev, { sender: 'ai', text: '...' }]);
 
     try {
-      const response = await fetch('cs-chatbot-psi.vercel.app/ask', {
+      const response = await fetch('cs-chatbot-psi.vercel.app/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: userInput, session_id: sessionId }),
