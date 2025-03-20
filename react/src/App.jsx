@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Copy, Moon, Sun } from 'lucide-react';
+
 function App() {
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -30,7 +31,7 @@ function App() {
     setMessages((prev) => [...prev, { sender: 'ai', text: '...' }]);
 
     try {
-      const response = await fetch('cs-chatbot-psi.vercel.app/ask`, {
+      const response = await fetch('cs-chatbot-psi.vercel.app/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: userInput, session_id: sessionId }),
