@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.csv
+*.json
+*.log
+*.zip
+*.tar.gz
+node_modules/
+
+# Ignore chroma local persistence
+server/chroma_db/
+*.sqlite3
+*.bin
