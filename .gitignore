@@ -13,3 +13,4 @@ node_modules/
 /server/*.pyc
 /server/.env
 /server/data/*
+.vercel
