@@ -8,7 +8,7 @@
       },
       {
         "src": "/(.*)",
-        "dest": "react/dist/$1"
+        "dest": "react/dist/index.html"
       }
     ]
   }
