@@ -3,6 +3,7 @@ import './App.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Copy, Moon, Sun } from 'lucide-react';
 
+const API_URL="https://cs-chatbot-nfmqprlku-moisesxtians-projects.vercel.app/api"
 function App() {
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -31,7 +32,7 @@ function App() {
     setMessages((prev) => [...prev, { sender: 'ai', text: '...' }]);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/ask', {
+      const response = await fetch(`${API_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: userInput, session_id: sessionId }),
