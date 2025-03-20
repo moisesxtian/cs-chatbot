@@ -7,7 +7,8 @@ from utils.ask import process_query
 app = FastAPI()
 
 origins = [
-    "https://cs-chatbot-fastapi.vercel.app",
+    "http://localhost:3000",
+    ""
 ]
 
 app.add_middleware(
@@ -33,3 +34,4 @@ def ask_endpoint(request: QueryRequest):
         return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+    
