@@ -1,6 +1,15 @@
 {
-    "buildCommand": "cd react && npm install && npm run build",
-    "outputDirectory": "react/dist",
+    "builds": [
+      {
+        "src": "react/package.json",
+        "use": "@vercel/static-build",
+        "config": { "distDir": "react/dist" }
+      },
+      {
+        "src": "server/main.py",
+        "use": "@vercel/python"
+      }
+    ],
     "routes": [
       {
         "src": "/api/(.*)",
@@ -8,7 +17,7 @@
       },
       {
         "src": "/(.*)",
-        "dest": "react/dist/index.html"
+        "dest": "react/dist/$1"
       }
     ]
   }
